@@ -21,4 +21,3 @@ integer "integer"
 `);
 
 console.log(parser.parse("1+1"));
-console.log(parser.buildMessage());
