@@ -1,25 +1,28 @@
-var peg = require("pegjs");
+// export function evalT(formula, lookup) {
+function evalT(formula, lookup) {
+  switch (formula.type) {
+    // case 'prop':
+    // case 'and':
+    // case 'or':
+    // case 'not':
+    default:
+      return formula;
+  }
+}
 
-var parser = peg.generate(`
-start
-  = additive
+const p1 = {
+  type: 'prop',
+  value: true,  // boolean
+};
 
-additive
-  = left:multiplicative _ "+" _ right:additive { return left + right; }
-  / multiplicative
+const p2 = {
+  type: 'prop',
+  value: false,  // boolean
+};
 
-multiplicative
-  = left:primary "*" right:multiplicative { return left * right; }
-  / primary
+const p3 = {
+  type: 'prop',
+  value: () => true,  // function (propositional logic)
+};
 
-primary
-  = integer
-  / "(" additive:additive ")" { return additive; }
-
-integer "integer"
-  = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
-
-_ = [ \\t\\r\\n]*
-`);
-
-console.log(parser.parse("1 + 1"));
+console.log(evalT(p1, ()=>{}));
