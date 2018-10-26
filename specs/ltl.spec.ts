@@ -2,17 +2,17 @@ import * as fc from 'fast-check';
 import {evalT} from '../src/ltl';
 import {LTLOperator, LTLFormula} from '../src/ltl'
 
-// test('or', () => {
-//   fc.assert(
-//     fc.property(fc.boolean(), data => {
-//       expect(evalT({
-//         type: LTLOperator.or,
-//         value: data as any,
-//       })).toEqual(data.indexOf(true) !== -1);
-//     }),
-//     {verbose: true},
-//   );
-// });
+test('not', () => {
+  fc.assert(
+    fc.property(fc.boolean(), data => {
+      expect(evalT({
+        type: LTLOperator.not,
+        value: data as LTLFormula,
+      })).toEqual(!data);
+    }),
+    {verbose: true},
+  );
+});
 
 test('and', () => {
   fc.assert(

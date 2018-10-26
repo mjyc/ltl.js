@@ -1,5 +1,4 @@
 export enum LTLOperator {
-  var = 'var',
   not = 'not',
   and = 'and',
   or = 'or',
@@ -7,21 +6,20 @@ export enum LTLOperator {
 
 export type LTLFormula = {
   type: LTLOperator,
-  value: string | [LTLFormula],
-} | boolean;
+  value: LTLFormula | [LTLFormula],
+} | boolean | string;
 
 export function evalT(formula: LTLFormula, lookup?: (key: string) => boolean) {
   if (typeof formula === 'boolean') {
     return formula;
+  } else if (typeof formula === 'string') {
+    return lookup(formula);
   }
 
-  if (formula.type === LTLOperator.var) {
-    return lookup(formula.value as string);
-
-  } else if (formula.type === LTLOperator.not) {
-    const f = evalT(formula, lookup);
-    return typeof formula.value === 'boolean'
-      ? !formula.value : f;
+  if (formula.type === LTLOperator.not) {
+    const f = evalT(formula.value as LTLFormula, lookup);
+    return typeof f === 'boolean'
+      ? !f : {type: LTLOperator.not, value: f};
 
   } else if (formula.type === LTLOperator.and) {
     const fs = (formula.value as [LTLFormula])
