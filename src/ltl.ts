@@ -5,7 +5,7 @@ start
   = additive
 
 additive
-  = left:multiplicative "+" right:additive { return left + right; }
+  = left:multiplicative _ "+" _ right:additive { return left + right; }
   / multiplicative
 
 multiplicative
@@ -18,6 +18,8 @@ primary
 
 integer "integer"
   = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+
+_ = [ \\t\\r\\n]*
 `);
 
-console.log(parser.parse("1+1"));
+console.log(parser.parse("1 + 1"));
