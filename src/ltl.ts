@@ -1,34 +1,40 @@
-export function evalT(formula, lookup) {
-  switch (formula.type) {
-    // case 'prop':
-    // case 'and':
-    // case 'or':
-    // case 'not':
-    default:
-      return formula;
-  }
+export enum LTLOperator {
+  var = 'var',
+  not = 'not',
+  and = 'and',
+  or = 'or',
 }
 
-const p1 = {
-  type: 'prop',
-  value: true,  // boolean
-};
+export type LTLFormula = {
+  type: LTLOperator,
+  value: any// string | [LTLFormula],
+} | boolean;
 
-const p2 = {
-  type: 'prop',
-  value: false,  // boolean
-};
+export function evalT(formula: LTLFormula, lookup?: (key: string) => boolean) {
+  if (typeof formula === 'boolean') {
+    return formula;
+  }
 
-const p3 = {
-  type: 'prop',
-  value: () => true,  // function (propositional logic)
-};
-
-const por1 = {
-  type: 'or',
-  value: [p1, p2]
-};
-
-// console.log(evalT(p1, ()=>{}));
-// console.log(evalT(p2, ()=>{}));
-// console.log(evalT(p3, ()=>{}));
+  switch (formula.type) {
+    case LTLOperator.var:
+      return lookup(formula.value as string);
+    case LTLOperator.not:
+      const f = evalT(formula, lookup);
+      return typeof formula.value === 'boolean'
+        ? !formula.value : f;
+    case LTLOperator.and:
+      const fs = formula.value
+        .map(f => evalT(f, lookup))
+      if (fs.indexOf(false) !== -1)  // conjunction contains a false
+        return false;
+      const fsWOBool = fs.filter(f => typeof f !== 'boolean');
+      return fsWOBool.length === 0
+        ? true  // an empty conjunction is true
+        : {
+          type: LTLOperator.and,
+          value: fsWOBool,
+        };
+    default:
+      throw new Error(`Unknown type: ${formula.type}`);
+  }
+}
