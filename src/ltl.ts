@@ -1,5 +1,4 @@
-// export function evalT(formula, lookup) {
-function evalT(formula, lookup) {
+export function evalT(formula, lookup) {
   switch (formula.type) {
     // case 'prop':
     // case 'and':
@@ -25,4 +24,11 @@ const p3 = {
   value: () => true,  // function (propositional logic)
 };
 
-console.log(evalT(p1, ()=>{}));
+const por1 = {
+  type: 'or',
+  value: [p1, p2]
+};
+
+// console.log(evalT(p1, ()=>{}));
+// console.log(evalT(p2, ()=>{}));
+// console.log(evalT(p3, ()=>{}));

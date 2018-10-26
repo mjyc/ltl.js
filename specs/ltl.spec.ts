@@ -16,10 +16,43 @@ const p3 = {
   value: () => true,  // function (propositional logic)
 };
 
-console.log(evalT(p1, ()=>{}));
+// console.log(evalT(p1, ()=>{}));
 
-test('test', () => {
+test('two properties', () => {
   fc.assert(fc.property(fc.boolean(), data => {
-      expect(true).toEqual(true)
-  }));
+    fc.property(fc.boolean(), data2 => {
+      console.log('two properties', data, data2);
+      expect(data != data2).toEqual(true);
+    });
+  }), {verbose: true});
+});
+
+test('set', () => {
+  fc.assert(
+    fc.property(fc.set(fc.boolean(), 2, 2), data => {
+      console.log('set', data);
+      expect(true).toEqual(true);
+    }),
+    {verbose: true},
+  );
+});
+
+test('tuple', () => {
+  fc.assert(
+    fc.property(fc.tuple(fc.boolean()), data => {
+      console.log('tuple', data);
+      expect(true).toEqual(true);
+    }),
+    {verbose: true},
+  );
+});
+
+test('array', () => {
+  fc.assert(
+    fc.property(fc.array(fc.boolean(), 2, 2), data => {
+      console.log('array', data);
+      expect(true).toEqual(true);
+    }),
+    {verbose: true},
+  );
 });
