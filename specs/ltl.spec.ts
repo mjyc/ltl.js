@@ -95,3 +95,21 @@ test('always', () => {
     {verbose: true},
   );
 });
+
+test('eventually', () => {
+  const formula: LTLFormula = {
+    type: LTLOperator.eventually,
+    value: 'a',
+  };
+  fc.assert(
+    fc.property(fc.array(fc.boolean()), data => {
+      const result = data.reduce((f, d) => {
+        return evalT(f, (key) => d);
+      }, formula);
+      const expected = data.some(d => d)
+        ? true : formula;
+      expect(result).toEqual(expected);
+    }),
+    {verbose: true},
+  );
+});

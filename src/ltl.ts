@@ -4,6 +4,7 @@ export enum LTLOperator {
   or = 'or',
   next = 'next',
   always = 'always',
+  eventually = 'eventually',
 }
 
 export type LTLFormula = {
@@ -38,7 +39,7 @@ export function evalT(
     return fsWOBool.length === 0
       ? true  // an empty conjunction is a conjunction of trues
       : fsWOBool.length === 1
-        ? fsWOBool[0]  // and with just one formula
+        ? fsWOBool[0]  // "and" with one formula is just that formula
         : {
           type: LTLOperator.and,
           value: fsWOBool as [LTLFormula],
@@ -52,10 +53,12 @@ export function evalT(
     const fsWOBool = fs.filter(f => typeof f !== 'boolean');
     return fsWOBool.length === 0
       ? false  // an empty disjunction is a disjunction of falses
-      : {
-        type: LTLOperator.or,
-        value: fsWOBool as [LTLFormula],
-      };
+      : fsWOBool.length === 1
+        ? fsWOBool[0]  // "or" with one formula is just that formula
+        : {
+          type: LTLOperator.or,
+          value: fsWOBool as [LTLFormula],
+        };
 
   } else if (formula.type === LTLOperator.next) {
     return formula.value as LTLFormula;
@@ -64,10 +67,21 @@ export function evalT(
     const f = evalT(formula.value as LTLFormula, lookup);
     return (typeof f === 'boolean')
       ? !f
-        ? f  // false!
-        : formula  // if f is true, keep testing formula
+        ? f  // false! done!
+        : formula  // if f is true, keep evaluating formula
       : {
         type: LTLOperator.and,
+        value: [f, formula] as any,  // f is a partially evaluated formula
+      };
+
+  } else if (formula.type === LTLOperator.eventually) {
+    const f = evalT(formula.value as LTLFormula, lookup);
+    return (typeof f === 'boolean')
+      ? f
+        ? f  // true! done!
+        : formula  // if f is false, keep evaluating formula
+      : {
+        type: LTLOperator.or,
         value: [f, formula] as any,  // f is a partially evaluated formula
       };
 
