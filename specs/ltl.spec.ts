@@ -67,12 +67,26 @@ test('or', () => {
 
 test('next', () => {
   fc.assert(
-    fc.property(fc.array(fc.boolean()), data => {
+    fc.property(fc.boolean(), data => {
       const f = {
         type: LTLOperator.next,
         value: data,
       };
       expect(evalT(evalT(f))).toEqual(data);
+    }),
+    {verbose: true},
+  );
+});
+
+test('until', () => {
+  fc.assert(
+    fc.property(fc.array(fc.boolean()), data => {
+      const f = {
+        type: LTLOperator.until,
+        value: ['a', 'b'],
+      };
+      console.log(data);
+      expect(true).toEqual(true);
     }),
     {verbose: true},
   );

@@ -3,6 +3,7 @@ export enum LTLOperator {
   and = 'and',
   or = 'or',
   next = 'next',
+  until = 'until',
 }
 
 export type LTLFormula = {
@@ -57,6 +58,32 @@ export function evalT(
   } else if (formula.type === LTLOperator.next) {
     return formula.value as LTLFormula;
 
+  } else if (formula.type === LTLOperator.until) {
+    const f1 = evalT(formula.value[0], lookup);
+    const f2 = evalT(formula.value[1], lookup);
+
+    if (typeof f1 == 'boolean' && !f1) {
+      return f1;
+    } else if (typeof f2 == 'boolean' && f2) {
+      return f2;
+    }
+
+    // const a: LTLFormula = {
+    //   type: LTLOperator.or,
+    //   value: [f1 as LTLFormula, formula.value[1]] as any,
+    // };
+    // console.log(a);
+
+    return {
+      type: LTLOperator.until,
+      value: [{
+        type: LTLOperator.and,
+        value: [f1, formula.value[0]],
+      }, {
+        type: LTLOperator.or,
+        value: [f1, formula.value[1]],
+      }] as any,
+    };
   } else {
     throw new Error(`Unknown type: ${formula.type}`);
   }
