@@ -9,11 +9,17 @@ export type LTLFormula = {
   value: LTLFormula | [LTLFormula],
 } | boolean | string;
 
-export function evalT(formula: LTLFormula, lookup?: (key: string) => boolean) {
+export function evalT(
+  formula: LTLFormula,
+  lookup?: (key: string) => boolean
+) {
   if (typeof formula === 'boolean') {
     return formula;
   } else if (typeof formula === 'string') {
-    return lookup(formula);
+    if (typeof lookup === 'undefined') {
+      throw new Error('Argument lookup is undefined');
+    }
+    return !!lookup(formula);
   }
 
   if (formula.type === LTLOperator.not) {
