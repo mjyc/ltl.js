@@ -3,7 +3,7 @@ export enum LTLOperator {
   and = 'and',
   or = 'or',
   next = 'next',
-  until = 'until',
+  always = 'always',
 }
 
 export type LTLFormula = {
@@ -19,7 +19,7 @@ export function evalT(
     return formula;
   } else if (typeof formula === 'string') {
     if (typeof lookup === 'undefined') {
-      throw new Error('Argument lookup is undefined');
+      throw new Error(`Argument lookup is undefined`);
     }
     return !!lookup(formula);
   }
@@ -37,10 +37,12 @@ export function evalT(
     const fsWOBool = fs.filter(f => typeof f !== 'boolean');
     return fsWOBool.length === 0
       ? true  // an empty conjunction is a conjunction of trues
-      : {
-        type: LTLOperator.and,
-        value: fsWOBool as [LTLFormula],
-      };
+      : fsWOBool.length === 1
+        ? fsWOBool[0]  // and with just one formula
+        : {
+          type: LTLOperator.and,
+          value: fsWOBool as [LTLFormula],
+        };
 
   } else if (formula.type === LTLOperator.or) {
     const fs = (formula.value as [LTLFormula])
@@ -58,26 +60,17 @@ export function evalT(
   } else if (formula.type === LTLOperator.next) {
     return formula.value as LTLFormula;
 
-  } else if (formula.type === LTLOperator.until) {
-    const f1 = evalT(formula.value[0], lookup);
-    const f2 = evalT(formula.value[1], lookup);
-
-    if (typeof f2 == 'boolean' && f2) {  // this maynot true
-      return f2;
-    } else if (typeof f1 == 'boolean' && !f1) {
-      return f1;
-    } else 
-
-    return {
-      type: LTLOperator.until,
-      value: [{
+  } else if (formula.type === LTLOperator.always) {
+    const f = evalT(formula.value as LTLFormula, lookup);
+    return (typeof f === 'boolean')
+      ? !f
+        ? f  // false!
+        : formula  // if f is true, keep testing formula
+      : {
         type: LTLOperator.and,
-        value: [f1, formula.value[0]],
-      }, {
-        type: LTLOperator.or,
-        value: [f2, formula.value[1]],
-      }] as any,
-    };
+        value: [f, formula] as any,  // f is a partially evaluated formula
+      };
+
   } else {
     throw new Error(`Unknown type: ${formula.type}`);
   }
