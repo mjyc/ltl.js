@@ -65,3 +65,15 @@ test('or', () => {
   );
 });
 
+test('next', () => {
+  fc.assert(
+    fc.property(fc.array(fc.boolean()), data => {
+      const f = {
+        type: LTLOperator.next,
+        value: data,
+      };
+      expect(evalT(evalT(f))).toEqual(data);
+    }),
+    {verbose: true},
+  );
+});

@@ -2,6 +2,7 @@ export enum LTLOperator {
   not = 'not',
   and = 'and',
   or = 'or',
+  next = 'next',
 }
 
 export type LTLFormula = {
@@ -12,7 +13,7 @@ export type LTLFormula = {
 export function evalT(
   formula: LTLFormula,
   lookup?: (key: string) => boolean
-) {
+): LTLFormula {
   if (typeof formula === 'boolean') {
     return formula;
   } else if (typeof formula === 'string') {
@@ -37,7 +38,7 @@ export function evalT(
       ? true  // an empty conjunction is a conjunction of trues
       : {
         type: LTLOperator.and,
-        value: fsWOBool,
+        value: fsWOBool as [LTLFormula],
       };
 
   } else if (formula.type === LTLOperator.or) {
@@ -50,8 +51,11 @@ export function evalT(
       ? false  // an empty disjunction is a disjunction of falses
       : {
         type: LTLOperator.or,
-        value: fsWOBool,
+        value: fsWOBool as [LTLFormula],
       };
+
+  } else if (formula.type === LTLOperator.next) {
+    return formula.value as LTLFormula;
 
   } else {
     throw new Error(`Unknown type: ${formula.type}`);
