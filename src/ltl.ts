@@ -62,17 +62,11 @@ export function evalT(
     const f1 = evalT(formula.value[0], lookup);
     const f2 = evalT(formula.value[1], lookup);
 
-    if (typeof f1 == 'boolean' && !f1) {
-      return f1;
-    } else if (typeof f2 == 'boolean' && f2) {
+    if (typeof f2 == 'boolean' && f2) {  // this maynot true
       return f2;
-    }
-
-    // const a: LTLFormula = {
-    //   type: LTLOperator.or,
-    //   value: [f1 as LTLFormula, formula.value[1]] as any,
-    // };
-    // console.log(a);
+    } else if (typeof f1 == 'boolean' && !f1) {
+      return f1;
+    } else 
 
     return {
       type: LTLOperator.until,
@@ -81,7 +75,7 @@ export function evalT(
         value: [f1, formula.value[0]],
       }, {
         type: LTLOperator.or,
-        value: [f1, formula.value[1]],
+        value: [f2, formula.value[1]],
       }] as any,
     };
   } else {

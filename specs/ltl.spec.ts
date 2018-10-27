@@ -79,14 +79,33 @@ test('next', () => {
 });
 
 test('until', () => {
+  const formula = {
+    type: LTLOperator.until,
+    value: ['0', '1'] as any,
+  };
   fc.assert(
-    fc.property(fc.array(fc.boolean()), data => {
-      const f = {
-        type: LTLOperator.until,
-        value: ['a', 'b'],
-      };
-      console.log(data);
-      expect(true).toEqual(true);
+    fc.property(fc.array(fc.tuple(fc.boolean(), fc.boolean())), data => {
+      console.log('===', data);
+      const r = data.reduce((f, tup) => {
+        console.log('---', f, tup, tup[0], tup[1]);
+        return evalT(f, (key) => tup[parseInt(key)]) as any;
+      }, formula);
+      // console.log('r', r);
+      let r2 = true;
+      for (let i = 0; i < data.length; i++) {
+        const tup = data[i];
+        r2 = r2 && (tup[0] || tup[1]);
+        if (r2 && tup[1]) {
+          break;
+        }
+      }
+      // const r2 = data.reduceRight((f, tup) => {
+      //   return f && (tup[0] || tup[1]);
+      //   // return evalT(f, (key) => tup[key]) as any;
+      // }, {cur: true, done: false});
+      // if (r)
+      if (r !== r2) 
+        console.log('xxx', r, r2, data);
     }),
     {verbose: true},
   );
