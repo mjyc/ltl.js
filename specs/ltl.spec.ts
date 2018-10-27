@@ -16,7 +16,7 @@ test('not', () => {
 
 test('and', () => {
   fc.assert(
-    fc.property(fc.array(fc.boolean(), 2, 2), data => {
+    fc.property(fc.array(fc.boolean()), data => {
       expect(evalT({
         type: LTLOperator.and,
         value: data as [LTLFormula],
@@ -28,7 +28,7 @@ test('and', () => {
 
 test('or', () => {
   fc.assert(
-    fc.property(fc.array(fc.boolean(), 2, 2), data => {
+    fc.property(fc.array(fc.boolean()), data => {
       expect(evalT({
         type: LTLOperator.or,
         value: data as [LTLFormula],
