@@ -1,39 +1,19 @@
 {
   "name": "sample-fast-check",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "author": "Michael Jae-Yoon Chung",
   "license": "MIT",
-  "dependencies": {
-    "pegjs": "^0.10.0",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.1.3"
-  },
   "devDependencies": {
     "@types/jest": "^23.3.7",
     "fast-check": "^1.7.0",
     "jest": "^23.6.0",
-    "ts-jest": "^23.10.4"
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.3"
   },
   "scripts": {
-    "test": "jest"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "testMatch": [
-      "**/specs/*.+(ts|tsx|js)"
-    ]
+    "build:cjs": "tsc --module commonjs --outdir lib/cjs",
+    "build:es6": "tsc --module es6 --outDir lib/es6",
+    "test": "jest --config jest.config.js"
   }
 }
